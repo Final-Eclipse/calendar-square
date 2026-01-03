@@ -10,7 +10,9 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.initUI()
+        # Initializes UI and time
+        self.initUI()   
+        self.update_current_time()  
 
         # Timer that updates the time every second
         self.set_time = QTimer()
@@ -24,6 +26,7 @@ class MainWindow(QMainWindow):
         self.get_calendar_notes()
 
     def initUI(self):
+        """Initializes the User Interface"""
         self.setMinimumSize(300, 325)
         self.setWindowTitle("Calendar")
         self.setWindowIcon(QIcon("calendar_square/calendar_square.ico"))
@@ -56,6 +59,7 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(self.text_area, 1)
     
     def create_text_glow_effect(self) -> QGraphicsDropShadowEffect:
+        """Creates a glow effect and returns it to be applied to text."""
         glow = QGraphicsDropShadowEffect()
         glow.setBlurRadius(20)
         glow.setOffset(0, 0)
@@ -64,6 +68,7 @@ class MainWindow(QMainWindow):
         return glow
 
     def create_text_shadow_effect(self) -> QGraphicsDropShadowEffect:
+        """Creates a shadow effect and returns it to be applied to text."""
         shadow = QGraphicsDropShadowEffect()
         shadow.setBlurRadius(25)
         shadow.setColor(QColor(0, 0, 0))
@@ -71,6 +76,7 @@ class MainWindow(QMainWindow):
         return shadow
 
     def paintEvent(self, a0):
+        """Creates and sets a gradiant background."""
         painter = QPainter(self)
         painter.setPen(QPen(Qt.black, 0, Qt.SolidLine))
 
@@ -86,6 +92,7 @@ class MainWindow(QMainWindow):
         painter.drawRect(0, 0, self.width(), self.height())
 
     def create_text_area(self):
+        """Creates the QTextEdit() the user can type notes in."""
         self.text_area = QTextEdit()
         self.text_area.setStyleSheet("background-color: rgba(0, 0, 0, 0); color: #FFFFFF; font-size: 40px")  # Makes text area background transparent
         self.text_area.setPlaceholderText("Type here")
@@ -93,11 +100,13 @@ class MainWindow(QMainWindow):
         self.text_area.hide()
 
     def create_calendar_widgets(self):
+        """Creates all widgets pertaining to today's date."""
         self.create_month_label()
         self.create_middle_area()
         self.create_day_label()
 
     def create_middle_area(self):
+        """Creates a QWidget() that acts as a container for the text glow for self.day_of_the_month_label."""
         self.middle_area = QWidget()
         qh_layout = QHBoxLayout()
         qh_layout.setContentsMargins(0, 0, 0, 0)
@@ -111,22 +120,21 @@ class MainWindow(QMainWindow):
         self.middle_area.setGraphicsEffect(glow)
 
     def create_month_label(self):
-        month = self.get_current_time()[0]
-
-        self.month_label = QLabel(month)  
+        """Creates a QLabel() that displays the current month."""
+        self.month_label = QLabel()  
         self.month_label.setAlignment(Qt.AlignCenter)
         self.month_label.setFont(QFont("Chewy", 40, QFont.Thin))
         self.month_label.setStyleSheet("color: white")
         self.month_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.month_label.setContentsMargins(0, 0, 0, 0)
 
+        # Shadow effect to text
         text_shadow = self.create_text_shadow_effect()
         self.month_label.setGraphicsEffect(text_shadow)
 
     def create_day_of_the_month_label(self):
-        day_of_the_month = self.get_current_time()[2]
-
-        self.day_of_the_month_label = QLabel(day_of_the_month)
+        """Creates a QLabel() that displays the current day of the month."""
+        self.day_of_the_month_label = QLabel()
         self.day_of_the_month_label.setFont(QFont("Chewy", 50, QFont.Thin))
         self.day_of_the_month_label.setStyleSheet("color: white")
         self.day_of_the_month_label.setAlignment(Qt.AlignHCenter | Qt.AlignBottom)
@@ -138,29 +146,18 @@ class MainWindow(QMainWindow):
         self.day_of_the_month_label.setGraphicsEffect(text_shadow)
 
     def create_day_label(self):
-        day = self.get_current_time()[1]
-
-        self.day_label = QLabel(day)
+        """Creates a QLabel() that displays the current day."""
+        self.day_label = QLabel()
         self.day_label.setFont(QFont("Chewy", 25, QFont.Thin))
         self.day_label.setStyleSheet("color: white")
         self.day_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
 
+        # Shadow effect to text
         text_shadow = self.create_text_shadow_effect()
         self.day_label.setGraphicsEffect(text_shadow)
-
-    # Gets the system's current month, day, and day of the month
-    # Is only called when initially creating calendar widgets
-    def get_current_time(self) -> tuple:
-        current_time = datetime.now()
-
-        month = current_time.strftime("%b")
-        day = current_time.strftime("%A")
-        day_of_the_month = current_time.strftime("%d")
-
-        return month, day, day_of_the_month
     
-    # Updates the current time every second
     def update_current_time(self):
+        """Updates the current time."""
         days = {
             "Mon": "Monday",
             "Tue": "Tuesday",
@@ -176,13 +173,14 @@ class MainWindow(QMainWindow):
         month = current_time[4:7]
         day = current_time[0:3]
         day = days[day]
-        day_of_the_month = current_time[8:10]
+        day_of_the_month = current_time[8:10].strip()
 
         self.month_label.setText(month)
         self.day_label.setText(day)
         self.day_of_the_month_label.setText(day_of_the_month)
 
     def show_or_hide_text_area(self, event):
+        """Shows the text area when the window reaches beyond a certain size and hides it when it is below a certain size."""
         window_size = event.size()
         window_width = window_size.width()
         window_height = window_size.height()
@@ -192,12 +190,13 @@ class MainWindow(QMainWindow):
         else:
             self.text_area.hide()
 
-    # Keeps the window square
     def resizeEvent(self, event):  
+        """Is called when the window is resized."""
         self.show_or_hide_text_area(event=event)
         self.resize_font(event=event)
 
     def resize_font(self, event):
+        """Resizes the font of each widget based on the size of the window."""
         min_and_max_font_sizes = {
             "month_label": (40, 150),
             "day_of_the_month_label": (50, 160),
@@ -217,14 +216,14 @@ class MainWindow(QMainWindow):
             font.setPointSize(new_font_size)
             label_widget.setFont(font)
   
-    # Initializes self.text_area with previously typed notes
     def get_calendar_notes(self):
+        """Initializes self.text_area with previously typed notes"""
         with open("calendar_square/calendar_notes.txt", "r") as file:
             current_notes = file.read()
         self.text_area.setText(current_notes)
 
-    # Saves the current notes to calendar_notes.txt
     def save_calendar_notes(self):
+        """Saves the current notes to calendar_square/calendar_notes.txt"""
         new_notes = self.text_area.toPlainText()
         with open("calendar_square/calendar_notes.txt", "w") as file:
             file.write(new_notes)
