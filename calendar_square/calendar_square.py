@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QSizePolicy, QVBoxLayout, QLabel, QHBoxLayout, QGraphicsDropShadowEffect, QTextEdit
 from PyQt5.QtCore import Qt, QTimer, QDate
 from PyQt5.QtGui import QFont, QLinearGradient, QPainter, QBrush, QPen, QColor, QIcon
-from datetime import datetime
 
 # Reference
 # https://www.google.com/search?q=calendar+red+line+at+top&udm=2&sxsrf=AE3TifMiXMsgHrR3oa2W-EQ15y6KAKIeHw%3A1766561107641
